@@ -91,12 +91,25 @@ operatorButtons.forEach((button) => {
 });
 
 equalButton.addEventListener("click", () => {
-    const result = operate(operator, Number(firstNumber), Number(secondNumber));
-    display.textContent = result;
+    if (firstNumber === "" || secondNumber === "" || operator === "") return;
+
+    let result = operate(operator, Number(firstNumber), Number(secondNumber));
+
+    if (typeof result === "string") {
+        updateDisplay(result);
+        resetCalculator();
+        return;
+    }
+
+    result = roundResult(result);
+
+    updateDisplay(result);
 
     firstNumber = result.toString();
     secondNumber = "";
     operator = "";
+
+    shouldResetDisplay = true;
 });
 
 function updateDisplay(value) {
