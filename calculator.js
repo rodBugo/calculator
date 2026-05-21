@@ -131,3 +131,7 @@ function resetCalculator() {
 
     updateDisplay("0");
 }
+
+function roundResult(number) {
+    return Math.round(number * 1000000) / 1000000;
+}
