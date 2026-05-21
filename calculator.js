@@ -37,6 +37,7 @@ const digitButtons = document.querySelectorAll(".digit");
 const display = document.querySelector("#display");
 const operatorButtons = document.querySelectorAll(".operant");
 const equalButton = document.querySelector("#equalsBtn");
+const clearButton = document.querySelector("#clearBtn");
 
 digitButtons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -118,4 +119,15 @@ function updateDisplay(value) {
     }
 
     display.textContent = value;
+}
+
+clearButton.addEventListener("click", resetCalculator);
+
+function resetCalculator() {
+    firstNumber = "";
+    secondNumber = "";
+    operator = "";
+    shouldResetDisplay = false;
+
+    updateDisplay("0");
 }
