@@ -9,9 +9,9 @@ const divide = (a, b) => {
     return a / b;
 };
 
-let firstNumber;
-let secondNumber;
-let operator;
+let firstNumber = "";
+let secondNumber = "";
+let operator = "";
 
 function operate(operator, firstNumber, secondNumber) {
     switch (operator) {
@@ -31,3 +31,13 @@ function operate(operator, firstNumber, secondNumber) {
             return "Unknown operant was selected";
     }
 }
+
+const digitButtons = document.querySelectorAll(".digit");
+const display = document.querySelector("#display");
+
+digitButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+        firstNumber += button.textContent;
+        display.textContent = firstNumber;
+    });
+});
