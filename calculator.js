@@ -40,12 +40,23 @@ const equalButton = document.querySelector("#equalsBtn");
 
 digitButtons.forEach((button) => {
     button.addEventListener("click", () => {
+        if (shouldResetDisplay) {
+            firstNumber = "";
+            secondNumber = "";
+            operator = "";
+            shouldResetDisplay = false;
+        }
+
         if (operator === "") {
+            if (button.textContent === "." && secondNumber.includes(".")) return;
+
             firstNumber += button.textContent;
-            display.textContent = firstNumber;
+            updateDisplay(firstNumber);
         } else {
+            if (button.textContent === "." && secondNumber.includes(".")) return;
+
             secondNumber += button.textContent;
-            display.textContent = secondNumber;
+            updateDisplay(secondNumber);
         }
     });
 });
