@@ -12,6 +12,7 @@ const divide = (a, b) => {
 let firstNumber = "";
 let secondNumber = "";
 let operator = "";
+let shouldResetDisplay = false;
 
 function operate(operator, firstNumber, secondNumber) {
     switch (operator) {
@@ -34,10 +35,40 @@ function operate(operator, firstNumber, secondNumber) {
 
 const digitButtons = document.querySelectorAll(".digit");
 const display = document.querySelector("#display");
+const operatorButtons = document.querySelectorAll(".operant");
+const equalButton = document.querySelector("#equalsBtn");
 
 digitButtons.forEach((button) => {
     button.addEventListener("click", () => {
-        firstNumber += button.textContent;
-        display.textContent = firstNumber;
+        if (operator === "") {
+            firstNumber += button.textContent;
+            display.textContent = firstNumber;
+        } else {
+            secondNumber += button.textContent;
+            display.textContent = secondNumber;
+        }
     });
 });
+
+operatorButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+        operator = button.textContent;
+    });
+});
+
+equalButton.addEventListener("click", () => {
+    const result = operate(operator, Number(firstNumber), Number(secondNumber));
+    display.textContent = result;
+
+    firstNumber = result.toString();
+    secondNumber = "";
+    operator = "";
+});
+
+function updateDisplay(value) {
+    if (typeof value === "number") {
+        value = Math.round(value * 1000000) / 1000000;
+    }
+
+    display.textContent = value;
+}
