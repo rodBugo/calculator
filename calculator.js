@@ -63,6 +63,29 @@ digitButtons.forEach((button) => {
 
 operatorButtons.forEach((button) => {
     button.addEventListener("click", () => {
+        if (firstNumber === "") return;
+
+        if (operator !== "" && secondNumber !== "") {
+            operator = button.textContent;
+            return;
+        }
+
+        if (operator !== "" && secondNumber !== "") {
+            let result = operate(operator, Number(firstNumber), Number(secondNumber));
+
+            if (typeof result === "string") {
+                updateDisplay(result);
+                resetCalculator();
+                return;
+            }
+
+            result = roundResult(result);
+            updateDisplay(result);
+
+            firstNumber = result.toString();
+            secondNumber = "";
+        }
+
         operator = button.textContent;
     });
 });
