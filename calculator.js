@@ -48,6 +48,20 @@ function updateDisplay(value) {
     display.textContent = value;
 }
 
+function updateExpressionDisplay() {
+    let expression = firstNumber;
+
+    if (operator !== "") {
+        expression += `${operator}`;
+    }
+
+    if (secondNumber !== "") {
+        expression += `${secondNumber}`;
+    }
+
+    updateDisplay(expression || "0");
+}
+
 function roundResult(number) {
     return Math.round(number * 1000000) / 1000000;
 }
@@ -73,25 +87,23 @@ function handleDigit(value) {
         if (value === "." && firstNumber.includes(".")) return;
 
         firstNumber += value;
-        updateDisplay(firstNumber);
+        updateExpressionDisplay();
     } else {
         if (value === "." && secondNumber.includes(".")) return;
 
         secondNumber += value;
-        updateDisplay(secondNumber);
+        updateExpressionDisplay();
     }
 }
 
 function handleOperator(value) {
     if (firstNumber === "") return;
 
-    // Allow changing operator before entering second number
     if (operator !== "" && secondNumber === "") {
         operator = value;
         return;
     }
 
-    // Chain calculations
     if (operator !== "" && secondNumber !== "") {
         let result = operate(
             operator,
@@ -114,6 +126,7 @@ function handleOperator(value) {
     }
 
     operator = value;
+    updateExpressionDisplay();
 }
 
 function handleEquals() {
@@ -147,14 +160,13 @@ function handleBackspace() {
 
     if (operator === "") {
         firstNumber = firstNumber.slice(0, -1);
-        updateDisplay(firstNumber || "0");
+        updateExpressionDisplay();
     } else if (secondNumber !== "") {
         secondNumber = secondNumber.slice(0, -1);
-        updateDisplay(secondNumber || "0");
+        updateExpressionDisplay();
     }
 }
 
-/* ---------------- BUTTON EVENTS ---------------- */
 
 digitButtons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -174,42 +186,33 @@ clearButton.addEventListener("click", resetCalculator);
 
 backspaceButton.addEventListener("click", handleBackspace);
 
-/* ---------------- KEYBOARD SUPPORT ---------------- */
 
 document.addEventListener("keydown", (event) => {
     const key = event.key;
 
-    // Numbers
     if (!isNaN(key)) {
         handleDigit(key);
     }
 
-    // Decimal
     if (key === ".") {
         handleDigit(".");
     }
 
-    // Operators
     if (["+", "-", "*", "/"].includes(key)) {
         handleOperator(key);
     }
 
-    // Equals
     if (key === "Enter" || key === "=") {
         handleEquals();
     }
 
-    // Backspace
     if (key === "Backspace") {
         handleBackspace();
     }
 
-    // Clear
     if (key === "Escape") {
         resetCalculator();
     }
 });
-
-/* ---------------- INITIAL DISPLAY ---------------- */
 
 updateDisplay("0");
