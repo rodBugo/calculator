@@ -38,6 +38,7 @@ const display = document.querySelector("#display");
 const operatorButtons = document.querySelectorAll(".operant");
 const equalButton = document.querySelector("#equalsBtn");
 const clearButton = document.querySelector("#clearBtn");
+const backspaceButton = document.querySelector("#backspaceBtn");
 
 digitButtons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -135,3 +136,17 @@ function resetCalculator() {
 function roundResult(number) {
     return Math.round(number * 1000000) / 1000000;
 }
+
+backspaceButton.addEventListener("click", () => {
+    if (shouldResetDisplay) return;
+
+    if (operator === "") {
+        firstNumber = firstNumber.slice(0, -1);
+        updateDisplay(firstNumber || "0");
+    } else if (secondNumber !== "") {
+        secondNumber = secondNumber.slice(0, -1);
+        updateDisplay(secondNumber || "0");
+    }
+
+
+});
