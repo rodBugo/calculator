@@ -59,3 +59,4 @@ Through building this project, I practiced:
 * Press `=` or `Enter` to evaluate expressions
 * Press `Backspace` to remove digits
 * Press `Escape` or the clear button to reset the calculator
+* [https://rodbugo.github.io/calculator/](https://rodbugo.github.io/calculator/)
