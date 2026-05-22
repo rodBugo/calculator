@@ -29,7 +29,7 @@ function operate(operator, firstNumber, secondNumber) {
             return divide(firstNumber, secondNumber);
 
         default:
-            return "Unknown operant was selected";
+            return "Unknown operator selected";
     }
 }
 
@@ -40,62 +40,90 @@ const equalButton = document.querySelector("#equalsBtn");
 const clearButton = document.querySelector("#clearBtn");
 const backspaceButton = document.querySelector("#backspaceBtn");
 
-digitButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-        if (shouldResetDisplay) {
-            firstNumber = "";
-            secondNumber = "";
-            operator = "";
-            shouldResetDisplay = false;
-        }
+function updateDisplay(value) {
+    if (typeof value === "number") {
+        value = Math.round(value * 1000000) / 1000000;
+    }
 
-        if (operator === "") {
-            if (button.textContent === "." && secondNumber.includes(".")) return;
+    display.textContent = value;
+}
 
-            firstNumber += button.textContent;
-            updateDisplay(firstNumber);
-        } else {
-            if (button.textContent === "." && secondNumber.includes(".")) return;
+function roundResult(number) {
+    return Math.round(number * 1000000) / 1000000;
+}
 
-            secondNumber += button.textContent;
-            updateDisplay(secondNumber);
-        }
-    });
-});
+function resetCalculator() {
+    firstNumber = "";
+    secondNumber = "";
+    operator = "";
+    shouldResetDisplay = false;
 
-operatorButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-        if (firstNumber === "") return;
+    updateDisplay("0");
+}
 
-        if (operator !== "" && secondNumber !== "") {
-            operator = button.textContent;
+function handleDigit(value) {
+    if (shouldResetDisplay) {
+        firstNumber = "";
+        secondNumber = "";
+        operator = "";
+        shouldResetDisplay = false;
+    }
+
+    if (operator === "") {
+        if (value === "." && firstNumber.includes(".")) return;
+
+        firstNumber += value;
+        updateDisplay(firstNumber);
+    } else {
+        if (value === "." && secondNumber.includes(".")) return;
+
+        secondNumber += value;
+        updateDisplay(secondNumber);
+    }
+}
+
+function handleOperator(value) {
+    if (firstNumber === "") return;
+
+    // Allow changing operator before entering second number
+    if (operator !== "" && secondNumber === "") {
+        operator = value;
+        return;
+    }
+
+    // Chain calculations
+    if (operator !== "" && secondNumber !== "") {
+        let result = operate(
+            operator,
+            Number(firstNumber),
+            Number(secondNumber)
+        );
+
+        if (typeof result === "string") {
+            updateDisplay(result);
+            resetCalculator();
             return;
         }
 
-        if (operator !== "" && secondNumber !== "") {
-            let result = operate(operator, Number(firstNumber), Number(secondNumber));
+        result = roundResult(result);
 
-            if (typeof result === "string") {
-                updateDisplay(result);
-                resetCalculator();
-                return;
-            }
+        updateDisplay(result);
 
-            result = roundResult(result);
-            updateDisplay(result);
+        firstNumber = result.toString();
+        secondNumber = "";
+    }
 
-            firstNumber = result.toString();
-            secondNumber = "";
-        }
+    operator = value;
+}
 
-        operator = button.textContent;
-    });
-});
-
-equalButton.addEventListener("click", () => {
+function handleEquals() {
     if (firstNumber === "" || secondNumber === "" || operator === "") return;
 
-    let result = operate(operator, Number(firstNumber), Number(secondNumber));
+    let result = operate(
+        operator,
+        Number(firstNumber),
+        Number(secondNumber)
+    );
 
     if (typeof result === "string") {
         updateDisplay(result);
@@ -112,32 +140,9 @@ equalButton.addEventListener("click", () => {
     operator = "";
 
     shouldResetDisplay = true;
-});
-
-function updateDisplay(value) {
-    if (typeof value === "number") {
-        value = Math.round(value * 1000000) / 1000000;
-    }
-
-    display.textContent = value;
 }
 
-clearButton.addEventListener("click", resetCalculator);
-
-function resetCalculator() {
-    firstNumber = "";
-    secondNumber = "";
-    operator = "";
-    shouldResetDisplay = false;
-
-    updateDisplay("0");
-}
-
-function roundResult(number) {
-    return Math.round(number * 1000000) / 1000000;
-}
-
-backspaceButton.addEventListener("click", () => {
+function handleBackspace() {
     if (shouldResetDisplay) return;
 
     if (operator === "") {
@@ -147,6 +152,64 @@ backspaceButton.addEventListener("click", () => {
         secondNumber = secondNumber.slice(0, -1);
         updateDisplay(secondNumber || "0");
     }
+}
 
+/* ---------------- BUTTON EVENTS ---------------- */
 
+digitButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+        handleDigit(button.textContent);
+    });
 });
+
+operatorButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+        handleOperator(button.textContent);
+    });
+});
+
+equalButton.addEventListener("click", handleEquals);
+
+clearButton.addEventListener("click", resetCalculator);
+
+backspaceButton.addEventListener("click", handleBackspace);
+
+/* ---------------- KEYBOARD SUPPORT ---------------- */
+
+document.addEventListener("keydown", (event) => {
+    const key = event.key;
+
+    // Numbers
+    if (!isNaN(key)) {
+        handleDigit(key);
+    }
+
+    // Decimal
+    if (key === ".") {
+        handleDigit(".");
+    }
+
+    // Operators
+    if (["+", "-", "*", "/"].includes(key)) {
+        handleOperator(key);
+    }
+
+    // Equals
+    if (key === "Enter" || key === "=") {
+        handleEquals();
+    }
+
+    // Backspace
+    if (key === "Backspace") {
+        handleBackspace();
+    }
+
+    // Clear
+    if (key === "Escape") {
+        resetCalculator();
+    }
+});
+
+/* ---------------- INITIAL DISPLAY ---------------- */
+
+updateDisplay("0");
